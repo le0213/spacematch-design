@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 // Stats Data
 const stats = [
@@ -104,6 +105,20 @@ function FAQItem({ item, isOpen, onToggle }) {
 
 export default function HostLanding() {
   const [openFAQ, setOpenFAQ] = useState(null)
+  const { user, isHost } = useAuth()
+  const navigate = useNavigate()
+
+  const handleStartHost = () => {
+    if (user && isHost) {
+      navigate('/host/dashboard')
+    } else if (user) {
+      // 이미 로그인한 사용자 - 호스트 등록 페이지로
+      navigate('/host/register')
+    } else {
+      // 로그인 필요
+      navigate('/host/signup')
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -121,12 +136,37 @@ export default function HostLanding() {
           </Link>
 
           <div className="flex items-center gap-3">
-            <button className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900">
-              로그인
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-white bg-violet-600 rounded-full hover:bg-violet-700 transition-colors">
-              호스트 시작하기
-            </button>
+            {user ? (
+              <>
+                {isHost ? (
+                  <Link
+                    to="/host/dashboard"
+                    className="px-4 py-2 text-sm font-medium text-white bg-violet-600 rounded-full hover:bg-violet-700 transition-colors"
+                  >
+                    대시보드
+                  </Link>
+                ) : (
+                  <button
+                    onClick={handleStartHost}
+                    className="px-4 py-2 text-sm font-medium text-white bg-violet-600 rounded-full hover:bg-violet-700 transition-colors"
+                  >
+                    호스트 시작하기
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                <Link to="/host/login" className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900">
+                  로그인
+                </Link>
+                <button
+                  onClick={handleStartHost}
+                  className="px-4 py-2 text-sm font-medium text-white bg-violet-600 rounded-full hover:bg-violet-700 transition-colors"
+                >
+                  호스트 시작하기
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -145,12 +185,18 @@ export default function HostLanding() {
               정확한 니즈의 고객을 찾아드립니다
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="px-8 py-4 bg-white text-violet-600 font-semibold rounded-full hover:bg-gray-100 transition-colors">
+              <button
+                onClick={handleStartHost}
+                className="px-8 py-4 bg-white text-violet-600 font-semibold rounded-full hover:bg-gray-100 transition-colors"
+              >
                 지금 시작하기
               </button>
-              <button className="px-8 py-4 bg-violet-500 text-white font-semibold rounded-full border-2 border-violet-400 hover:bg-violet-400 transition-colors">
+              <a
+                href="#why"
+                className="px-8 py-4 bg-violet-500 text-white font-semibold rounded-full border-2 border-violet-400 hover:bg-violet-400 transition-colors text-center"
+              >
                 서비스 소개 보기
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -384,7 +430,10 @@ export default function HostLanding() {
           <p className="text-xl text-violet-100 mb-10">
             스페이스클라우드 계정만 있으면 5분 만에 시작할 수 있습니다
           </p>
-          <button className="px-10 py-5 bg-white text-violet-600 font-semibold text-lg rounded-full hover:bg-gray-100 transition-colors shadow-lg">
+          <button
+            onClick={handleStartHost}
+            className="px-10 py-5 bg-white text-violet-600 font-semibold text-lg rounded-full hover:bg-gray-100 transition-colors shadow-lg"
+          >
             호스트로 시작하기
           </button>
           <p className="mt-6 text-violet-200 text-sm">
@@ -411,21 +460,6 @@ export default function HostLanding() {
         </div>
       </footer>
 
-      {/* Demo Navigation */}
-      <div className="fixed bottom-4 right-4 flex flex-col gap-2">
-        <Link
-          to="/"
-          className="px-4 py-2 bg-gray-800 text-white text-sm rounded-lg hover:bg-gray-700 shadow-lg"
-        >
-          ← 게스트 홈 보기
-        </Link>
-        <Link
-          to="/chat"
-          className="px-4 py-2 bg-gray-800 text-white text-sm rounded-lg hover:bg-gray-700 shadow-lg"
-        >
-          → 채팅방 보기
-        </Link>
-      </div>
     </div>
   )
 }

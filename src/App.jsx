@@ -16,6 +16,12 @@ import QuoteDetail from './pages/QuoteDetail'
 import Payment from './pages/Payment'
 import PaymentComplete from './pages/PaymentComplete'
 
+// Phase 3 - Host Pages
+import HostDashboard from './pages/host/HostDashboard'
+import HostRequests from './pages/host/HostRequests'
+import HostRequestDetail from './pages/host/HostRequestDetail'
+import HostQuoteCreate from './pages/host/HostQuoteCreate'
+
 function App() {
   return (
     <AuthProvider>
@@ -42,6 +48,11 @@ function App() {
           <Route path="/host" element={<HostLanding />} />
           <Route path="/host/login" element={<Auth />} />
           <Route path="/host/signup" element={<Auth />} />
+          <Route path="/host/register" element={<HostDashboard />} />
+          <Route path="/host/dashboard" element={<HostDashboard />} />
+          <Route path="/host/requests" element={<HostRequests />} />
+          <Route path="/host/requests/:requestId" element={<HostRequestDetail />} />
+          <Route path="/host/quotes/create" element={<HostQuoteCreate />} />
         </Routes>
       </Router>
     </AuthProvider>

@@ -45,26 +45,18 @@ export function GuestHeader() {
               </div>
             </>
           ) : (
-            <>
-              <Link
-                to="/login"
-                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
-              >
-                로그인
-              </Link>
-              <Link
-                to="/signup"
-                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
-              >
-                회원가입
-              </Link>
-            </>
+            <Link
+              to="/login"
+              className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
+            >
+              로그인/회원가입
+            </Link>
           )}
           <Link
             to="/host"
             className="px-4 py-2 text-sm font-medium text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
           >
-            호스트가입
+            호스트전환
           </Link>
         </div>
       </div>

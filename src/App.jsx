@@ -14,6 +14,7 @@ import QuoteList from './pages/QuoteList'
 import QuoteDetail from './pages/QuoteDetail'
 import Payment from './pages/Payment'
 import PaymentComplete from './pages/PaymentComplete'
+import QuoteSheet from './pages/QuoteSheet'
 
 // Phase 3 - Host Pages
 import HostDashboard from './pages/host/HostDashboard'
@@ -35,6 +36,7 @@ function App() {
           <Route path="/quotes" element={<QuoteList />} />
           <Route path="/quotes/:requestId" element={<QuoteDetail />} />
           <Route path="/chat/:quoteId" element={<ChatRoom />} />
+          <Route path="/quote-sheet/:quoteId" element={<QuoteSheet />} />
           <Route path="/payment/:paymentId" element={<Payment />} />
           <Route path="/payment-complete/:paymentId" element={<PaymentComplete />} />
 

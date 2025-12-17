@@ -124,7 +124,7 @@ export default function GuestHome() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="AI가 잘 이해할 수 있도록 상황, 필요한 작업, 희망사항을 구체적으로 적어주세요."
-                  className="w-full h-32 resize-none text-gray-900 placeholder-gray-400 focus:outline-none text-base leading-relaxed"
+                  className="w-full h-20 resize-none text-gray-900 placeholder-gray-400 focus:outline-none text-base leading-relaxed"
                 />
               </div>
 

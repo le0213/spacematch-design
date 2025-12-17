@@ -99,12 +99,12 @@ function QuoteMessage({ sender, timestamp, quote, onPayment }) {
               </div>
             </div>
 
-            <button
-              onClick={() => onPayment(quote)}
-              className="w-full py-3 bg-violet-600 text-white font-semibold rounded-lg hover:bg-violet-700 transition-colors"
+            <Link
+              to={`/quote-sheet/${quote.id}`}
+              className="block w-full py-3 bg-violet-600 text-white font-semibold rounded-lg hover:bg-violet-700 transition-colors text-center"
             >
-              결제하기
-            </button>
+              견적서 확인하기
+            </Link>
           </div>
         </div>
         <div className="text-xs text-gray-400 mt-1">{timestamp}</div>

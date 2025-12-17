@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { getRequest } from '../stores/requestStore'
+import { generateMockQuotes } from '../stores/quoteStore'
 
 export default function MatchingWait() {
   const [searchParams] = useSearchParams()
@@ -11,6 +12,8 @@ export default function MatchingWait() {
 
   const [request, setRequest] = useState(null)
   const [progress, setProgress] = useState(0)
+  const [isComplete, setIsComplete] = useState(false)
+  const hasGeneratedQuotes = useRef(false)
 
   useEffect(() => {
     if (requestId) {
@@ -34,6 +37,22 @@ export default function MatchingWait() {
     return () => clearInterval(interval)
   }, [requestId])
 
+  // 프로그레스 완료 시 Mock 견적 생성 및 자동 이동
+  useEffect(() => {
+    if (progress >= 100 && !hasGeneratedQuotes.current && requestId && user) {
+      hasGeneratedQuotes.current = true
+      setIsComplete(true)
+
+      // Mock 견적 생성
+      const mockQuotes = generateMockQuotes(requestId, user.id)
+
+      // 1.5초 후 첫 번째 견적의 채팅방으로 이동
+      setTimeout(() => {
+        navigate(`/chat/${mockQuotes[0].id}`)
+      }, 1500)
+    }
+  }, [progress, requestId, user, navigate])
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -55,7 +74,7 @@ export default function MatchingWait() {
           <div className="mb-8">
             <div className="w-32 h-32 mx-auto bg-violet-100 rounded-full flex items-center justify-center mb-6 relative">
               <div className="text-5xl animate-bounce">
-                📬
+                {isComplete ? '✅' : '📬'}
               </div>
               {/* Progress Ring */}
               <svg className="absolute inset-0 w-32 h-32 -rotate-90">
@@ -81,11 +100,14 @@ export default function MatchingWait() {
             </div>
 
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              견적 요청이 완료되었어요!
+              {isComplete ? '매칭이 완료되었어요!' : '견적 요청이 완료되었어요!'}
             </h1>
             <p className="text-gray-500 mb-6">
-              조건에 맞는 공간을 찾고 있어요<br />
-              곧 호스트들의 견적이 도착할 거예요
+              {isComplete ? (
+                <>잠시 후 채팅으로 이동합니다...</>
+              ) : (
+                <>조건에 맞는 공간을 찾고 있어요<br />곧 호스트들의 견적이 도착할 거예요</>
+              )}
             </p>
 
             {/* Progress Bar */}
@@ -133,8 +155,8 @@ export default function MatchingWait() {
           <div className="bg-violet-50 rounded-2xl p-6 mb-8">
             <h3 className="font-semibold text-gray-900 mb-4">다음 단계</h3>
             <div className="flex items-start gap-4 text-left">
-              <div className="flex-shrink-0 w-8 h-8 bg-violet-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                1
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${isComplete ? 'bg-green-500 text-white' : 'bg-violet-600 text-white'}`}>
+                {isComplete ? '✓' : '1'}
               </div>
               <div>
                 <p className="font-medium text-gray-900">견적 도착 알림</p>
@@ -144,7 +166,7 @@ export default function MatchingWait() {
               </div>
             </div>
             <div className="flex items-start gap-4 text-left mt-4">
-              <div className="flex-shrink-0 w-8 h-8 bg-violet-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${isComplete ? 'bg-violet-600 text-white animate-pulse' : 'bg-violet-600 text-white'}`}>
                 2
               </div>
               <div>
@@ -167,43 +189,21 @@ export default function MatchingWait() {
             </div>
           </div>
 
-          {/* CTAs */}
-          <div className="space-y-3">
-            <Link
-              to="/my-requests"
-              className="block w-full py-4 bg-violet-600 text-white font-semibold rounded-full hover:bg-violet-700 transition-colors"
-            >
-              내 요청 보러가기
-            </Link>
-            <Link
-              to="/"
-              className="block w-full py-4 bg-white border border-gray-200 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-colors"
-            >
-              홈으로 돌아가기
-            </Link>
-          </div>
-
           {/* Info */}
-          <p className="mt-6 text-sm text-gray-400">
-            평균 24시간 이내에 첫 견적이 도착해요
-          </p>
-        </div>
-      </div>
+          {!isComplete && (
+            <p className="text-sm text-gray-400">
+              평균 24시간 이내에 첫 견적이 도착해요
+            </p>
+          )}
 
-      {/* Demo Navigation */}
-      <div className="fixed bottom-4 right-4 flex flex-col gap-2">
-        <Link
-          to="/"
-          className="px-4 py-2 bg-gray-800 text-white text-sm rounded-lg hover:bg-gray-700 shadow-lg"
-        >
-          ← 홈으로
-        </Link>
-        <Link
-          to="/my-requests"
-          className="px-4 py-2 bg-gray-800 text-white text-sm rounded-lg hover:bg-gray-700 shadow-lg"
-        >
-          → 내 요청 보기
-        </Link>
+          {/* Loading indicator when complete */}
+          {isComplete && (
+            <div className="flex items-center justify-center gap-2 text-violet-600">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-violet-600"></div>
+              <span className="text-sm font-medium">채팅방으로 이동 중...</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

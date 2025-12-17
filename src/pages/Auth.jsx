@@ -18,7 +18,7 @@ export default function Auth() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { login, signup } = useAuth()
+  const { login, signup, loginWithKakao, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -244,16 +244,30 @@ export default function Auth() {
             </div>
           </div>
 
-          {/* Social Login (Mock) */}
+          {/* Social Login */}
           <div className="space-y-3">
             <button
               type="button"
+              onClick={async () => {
+                try {
+                  await loginWithKakao()
+                } catch (err) {
+                  setError(err.message)
+                }
+              }}
               className="w-full py-3 px-4 bg-[#FEE500] text-gray-900 font-medium rounded-xl hover:bg-[#FDD800] transition-colors flex items-center justify-center gap-2"
             >
               <span>카카오로 시작하기</span>
             </button>
             <button
               type="button"
+              onClick={async () => {
+                try {
+                  await loginWithGoogle()
+                } catch (err) {
+                  setError(err.message)
+                }
+              }}
               className="w-full py-3 px-4 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
             >
               <span>Google로 시작하기</span>

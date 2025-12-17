@@ -1,94 +1,158 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
-
-// LocalStorage keys
-const STORAGE_KEYS = {
-  USER: 'spacematch_user',
-  USERS: 'spacematch_users',
-}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // 초기 로드 시 저장된 사용자 확인
+  // 초기 로드 시 세션 확인
   useEffect(() => {
-    const savedUser = localStorage.getItem(STORAGE_KEYS.USER)
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser))
-      } catch (e) {
-        localStorage.removeItem(STORAGE_KEYS.USER)
+    // 현재 세션 가져오기
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.user_metadata?.name || session.user.email?.split('@')[0],
+          phone: session.user.user_metadata?.phone || '',
+          role: session.user.user_metadata?.role || 'guest',
+        })
       }
-    }
-    setLoading(false)
+      setLoading(false)
+    })
+
+    // 인증 상태 변경 리스너
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email,
+            name: session.user.user_metadata?.name || session.user.email?.split('@')[0],
+            phone: session.user.user_metadata?.phone || '',
+            role: session.user.user_metadata?.role || 'guest',
+          })
+        } else {
+          setUser(null)
+        }
+        setLoading(false)
+      }
+    )
+
+    return () => subscription.unsubscribe()
   }, [])
 
   // 회원가입
-  const signup = (userData) => {
-    const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]')
+  const signup = async (userData) => {
+    const { data, error } = await supabase.auth.signUp({
+      email: userData.email,
+      password: userData.password,
+      options: {
+        data: {
+          name: userData.name,
+          phone: userData.phone || '',
+          role: userData.role || 'guest',
+        },
+      },
+    })
 
-    // 이메일 중복 체크
-    if (users.find(u => u.email === userData.email)) {
-      throw new Error('이미 가입된 이메일입니다.')
+    if (error) {
+      throw new Error(error.message)
     }
 
-    const newUser = {
-      id: `user_${Date.now()}`,
-      ...userData,
-      role: userData.role || 'guest',
-      createdAt: new Date().toISOString(),
+    // 이메일 확인 없이 바로 로그인 처리 (개발용)
+    if (data.user) {
+      return {
+        id: data.user.id,
+        email: data.user.email,
+        name: userData.name,
+        phone: userData.phone,
+        role: userData.role || 'guest',
+      }
     }
 
-    users.push(newUser)
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users))
-
-    // 자동 로그인
-    const { password, ...userWithoutPassword } = newUser
-    setUser(userWithoutPassword)
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userWithoutPassword))
-
-    return userWithoutPassword
+    return data
   }
 
   // 로그인
-  const login = (email, password) => {
-    const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]')
-    const foundUser = users.find(u => u.email === email && u.password === password)
+  const login = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
-    if (!foundUser) {
-      throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.')
+    if (error) {
+      throw new Error(error.message)
     }
 
-    const { password: _, ...userWithoutPassword } = foundUser
-    setUser(userWithoutPassword)
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userWithoutPassword))
-
-    return userWithoutPassword
+    return {
+      id: data.user.id,
+      email: data.user.email,
+      name: data.user.user_metadata?.name || email.split('@')[0],
+      phone: data.user.user_metadata?.phone || '',
+      role: data.user.user_metadata?.role || 'guest',
+    }
   }
 
   // 로그아웃
-  const logout = () => {
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('Logout error:', error)
+    }
     setUser(null)
-    localStorage.removeItem(STORAGE_KEYS.USER)
   }
 
   // 사용자 정보 업데이트
-  const updateUser = (updates) => {
-    if (!user) return
+  const updateUser = async (updates) => {
+    const { data, error } = await supabase.auth.updateUser({
+      data: updates,
+    })
 
-    const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]')
-    const userIndex = users.findIndex(u => u.id === user.id)
-
-    if (userIndex !== -1) {
-      users[userIndex] = { ...users[userIndex], ...updates }
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users))
+    if (error) {
+      throw new Error(error.message)
     }
 
-    const updatedUser = { ...user, ...updates }
-    setUser(updatedUser)
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updatedUser))
+    if (data.user) {
+      setUser(prev => ({
+        ...prev,
+        ...updates,
+      }))
+    }
+  }
+
+  // 소셜 로그인 (카카오)
+  const loginWithKakao = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return data
+  }
+
+  // 소셜 로그인 (구글)
+  const loginWithGoogle = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return data
   }
 
   const value = {
@@ -98,6 +162,8 @@ export function AuthProvider({ children }) {
     login,
     logout,
     updateUser,
+    loginWithKakao,
+    loginWithGoogle,
     isAuthenticated: !!user,
     isGuest: user?.role === 'guest',
     isHost: user?.role === 'host',

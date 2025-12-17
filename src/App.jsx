@@ -8,7 +8,6 @@ import HostLanding from './pages/HostLanding'
 import ChatRoom from './pages/ChatRoom'
 import Auth from './pages/Auth'
 import MatchingWait from './pages/MatchingWait'
-import MyRequests from './pages/MyRequests'
 
 // Phase 2 Pages
 import QuoteList from './pages/QuoteList'
@@ -31,7 +30,6 @@ function App() {
           <Route path="/" element={<GuestHome />} />
           <Route path="/request-summary" element={<RequestSummary />} />
           <Route path="/matching-wait" element={<MatchingWait />} />
-          <Route path="/my-requests" element={<MyRequests />} />
 
           {/* Phase 2 - Quote & Payment Routes */}
           <Route path="/quotes" element={<QuoteList />} />

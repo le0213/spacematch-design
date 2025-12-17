@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { getQuote } from '../stores/quoteStore'
+import { getQuote, getQuotesForUser } from '../stores/quoteStore'
 import { getOrCreateChatRoom, getMessagesByRoom, addMessage } from '../stores/chatStore'
 import { createPayment, getPaymentByQuote, formatPrice } from '../stores/paymentStore'
 
@@ -113,6 +113,127 @@ function QuoteMessage({ sender, timestamp, quote, onPayment }) {
   )
 }
 
+// Chat List Item Component
+function ChatListItem({ quote, isActive, onClick }) {
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diff = now - date
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+
+    if (days === 0) {
+      return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+    } else if (days === 1) {
+      return '어제'
+    } else if (days < 7) {
+      return `${days}일 전`
+    }
+    return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors text-left ${
+        isActive ? 'bg-violet-50 border-l-2 border-violet-600' : 'border-l-2 border-transparent'
+      }`}
+    >
+      <img
+        src={quote.host?.profileImage || `https://ui-avatars.com/api/?name=${quote.host?.name || 'Host'}&background=random`}
+        alt={quote.host?.name}
+        className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+      />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-1">
+          <h4 className="font-medium text-gray-900 truncate">{quote.host?.name || '호스트'}</h4>
+          <span className="text-xs text-gray-400 flex-shrink-0 ml-2">
+            {formatDate(quote.createdAt)}
+          </span>
+        </div>
+        <p className="text-sm text-gray-500 truncate">{quote.spaceName}</p>
+        <p className="text-sm text-violet-600 font-medium mt-1">
+          {formatPrice(quote.price)}원
+        </p>
+      </div>
+      {quote.status === '미열람' && (
+        <div className="w-2 h-2 bg-violet-600 rounded-full flex-shrink-0 mt-2"></div>
+      )}
+    </button>
+  )
+}
+
+// Chat List Panel Component
+function ChatListPanel({ quotes, activeQuoteId, onSelectQuote }) {
+  const [activeTab, setActiveTab] = useState('all')
+
+  const filteredQuotes = quotes.filter(q => {
+    if (activeTab === 'unread') return q.status === '미열람'
+    if (activeTab === 'ongoing') return q.status === '열람'
+    return true
+  })
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Tabs */}
+      <div className="p-4 border-b border-gray-200">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveTab('all')}
+            className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
+              activeTab === 'all'
+                ? 'bg-violet-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            전체 ({quotes.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('unread')}
+            className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
+              activeTab === 'unread'
+                ? 'bg-violet-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            안 읽음
+          </button>
+          <button
+            onClick={() => setActiveTab('ongoing')}
+            className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
+              activeTab === 'ongoing'
+                ? 'bg-violet-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            거래 중
+          </button>
+        </div>
+      </div>
+
+      {/* Chat List */}
+      <div className="flex-1 overflow-y-auto">
+        {filteredQuotes.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <p className="text-sm">받은 견적이 없습니다</p>
+          </div>
+        ) : (
+          filteredQuotes.map(quote => (
+            <ChatListItem
+              key={quote.id}
+              quote={quote}
+              isActive={quote.id === activeQuoteId}
+              onClick={() => onSelectQuote(quote.id)}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  )
+}
+
 // Info Panel Component
 function InfoPanel({ host, quote }) {
   if (!host) return null
@@ -161,11 +282,11 @@ function InfoPanel({ host, quote }) {
           <h4 className="font-medium text-gray-900 mb-3">견적 요약</h4>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">서비스 금액</span>
+              <span className="text-gray-500">공간 대여료</span>
               <span className="text-gray-900">{formatPrice(quote.price)}원</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">예상 소요시간</span>
+              <span className="text-gray-500">예상 이용시간</span>
               <span className="text-gray-900">{quote.estimatedDuration}</span>
             </div>
           </div>
@@ -194,6 +315,7 @@ export default function ChatRoom() {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
+  const [allQuotes, setAllQuotes] = useState([])
   const [quote, setQuote] = useState(null)
   const [room, setRoom] = useState(null)
   const [messages, setMessages] = useState([])
@@ -222,28 +344,34 @@ export default function ChatRoom() {
   }, [user, authLoading, quoteId])
 
   const loadData = () => {
-    // 견적 정보 로드
+    // 사용자의 모든 견적 로드
+    const userQuotes = getQuotesForUser(user.id)
+    setAllQuotes(userQuotes)
+
+    // 현재 견적 정보 로드
     const quoteData = getQuote(quoteId)
     if (!quoteData) {
-      // Mock 데이터가 없으면 기본 데이터 사용
+      // Mock 데이터가 없으면 기본 데이터 사용 (공간대여 컨셉)
       const mockQuote = {
         id: quoteId,
         host: {
           id: 'host_1',
-          name: '청소의 달인',
-          profileImage: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop',
+          name: '강남 프리미엄 회의실',
+          profileImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=100&h=100&fit=crop',
           rating: 4.9,
           reviewCount: 128,
           responseRate: 98,
         },
-        spaceName: '전문 청소 서비스',
+        spaceName: '강남 프리미엄 회의실',
         price: 150000,
-        description: '안녕하세요! 요청하신 내용 확인했습니다. 꼼꼼하게 작업해드리겠습니다.',
+        description: '안녕하세요! 강남역 3번 출구에서 도보 3분 거리에 위치한 프리미엄 회의실입니다. 최대 20명 수용 가능하며, 빔프로젝터와 화이트보드를 무료로 제공해드립니다.',
         items: [
-          { name: '기본 청소', price: 100000 },
-          { name: '욕실 정밀 청소', price: 50000 },
+          { name: '공간 대여료 (4시간)', price: 120000 },
+          { name: '빔프로젝터 사용', price: 0 },
+          { name: '음료 서비스', price: 30000 },
         ],
-        estimatedDuration: '3시간',
+        estimatedDuration: '4시간',
+        createdAt: new Date().toISOString(),
       }
       setQuote(mockQuote)
 
@@ -267,6 +395,10 @@ export default function ChatRoom() {
     }
 
     setLoading(false)
+  }
+
+  const handleSelectQuote = (selectedQuoteId) => {
+    navigate(`/chat/${selectedQuoteId}`)
   }
 
   const handleSend = (e) => {
@@ -322,11 +454,6 @@ export default function ChatRoom() {
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Header */}
       <header className="h-16 bg-white border-b border-gray-200 flex items-center px-6 flex-shrink-0">
-        <Link to="/quotes" className="mr-4 p-2 text-gray-500 hover:text-gray-700">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </Link>
         <Link to="/" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">S</span>
@@ -350,13 +477,28 @@ export default function ChatRoom() {
         </div>
       </header>
 
-      {/* Main Content - 2 Column Layout */}
+      {/* Main Content - 3 Column Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Chat Area */}
+        {/* Left Column - Chat List */}
+        <div className="w-72 bg-white border-r border-gray-200 flex-shrink-0 hidden md:block">
+          <ChatListPanel
+            quotes={allQuotes}
+            activeQuoteId={quoteId}
+            onSelectQuote={handleSelectQuote}
+          />
+        </div>
+
+        {/* Center Column - Chat Area */}
         <div className="flex-1 flex flex-col bg-gray-100 min-w-0">
           {/* Chat Header */}
           <div className="h-16 px-6 bg-white border-b border-gray-200 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
+              {/* Mobile back button */}
+              <Link to="/quotes" className="md:hidden mr-2 p-2 text-gray-500 hover:text-gray-700">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </Link>
               <img
                 src={host?.profileImage || `https://ui-avatars.com/api/?name=${host?.name || 'Host'}&background=random`}
                 alt={host?.name}

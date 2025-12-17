@@ -79,28 +79,52 @@ export function generateMockQuotes(requestId, guestId) {
   const mockHosts = [
     {
       id: 'host_1',
-      name: '청소의 달인',
-      profileImage: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop',
+      name: '강남 프리미엄 회의실',
+      profileImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=100&h=100&fit=crop',
       rating: 4.9,
       reviewCount: 128,
       responseRate: 98,
     },
     {
       id: 'host_2',
-      name: '깔끔이사',
-      profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop',
+      name: '홍대 스튜디오',
+      profileImage: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=100&h=100&fit=crop',
       rating: 4.7,
       reviewCount: 89,
       responseRate: 95,
     },
     {
       id: 'host_3',
-      name: '프로클리닝',
-      profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
+      name: '성수 파티룸',
+      profileImage: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=100&h=100&fit=crop',
       rating: 4.8,
       reviewCount: 256,
       responseRate: 99,
     },
+  ]
+
+  const mockDescriptions = [
+    '안녕하세요! 강남역 3번 출구에서 도보 3분 거리에 위치한 프리미엄 회의실입니다. 최대 20명 수용 가능하며, 빔프로젝터와 화이트보드를 무료로 제공해드립니다.',
+    '안녕하세요! 홍대입구역 인근 감성 스튜디오입니다. 촬영, 소규모 세미나, 워크숍에 최적화된 공간이에요. 자연광이 잘 들어와 촬영하기 좋습니다.',
+    '안녕하세요! 성수역 근처 파티룸입니다. 최대 30명까지 수용 가능하고, 음향 장비와 조명이 완비되어 있어요. 생일파티, 팀 행사에 딱입니다!',
+  ]
+
+  const mockItems = [
+    [
+      { name: '공간 대여료 (4시간)', price: 120000 },
+      { name: '빔프로젝터 사용', price: 0 },
+      { name: '음료 서비스', price: 30000 },
+    ],
+    [
+      { name: '공간 대여료 (3시간)', price: 90000 },
+      { name: '촬영 장비 대여', price: 50000 },
+      { name: '추가 조명 세트', price: 20000 },
+    ],
+    [
+      { name: '공간 대여료 (5시간)', price: 200000 },
+      { name: '음향 장비', price: 30000 },
+      { name: '파티 소품 세트', price: 20000 },
+    ],
   ]
 
   const mockQuotes = mockHosts.map((host, index) => ({
@@ -109,14 +133,11 @@ export function generateMockQuotes(requestId, guestId) {
     guestId,
     hostId: host.id,
     host: host,
-    spaceName: `${host.name} 전문 서비스`,
-    price: 150000 + (index * 30000),
-    description: `안녕하세요, ${host.name}입니다. 요청하신 내용 확인했습니다. 꼼꼼하고 깔끔하게 작업해드리겠습니다.`,
-    items: [
-      { name: '기본 서비스', price: 100000 + (index * 20000) },
-      { name: '추가 옵션', price: 50000 + (index * 10000) },
-    ],
-    estimatedDuration: `${2 + index}시간`,
+    spaceName: host.name,
+    price: mockItems[index].reduce((sum, item) => sum + item.price, 0),
+    description: mockDescriptions[index],
+    items: mockItems[index],
+    estimatedDuration: `${3 + index}시간`,
     availableDate: '협의 후 결정',
     status: index === 0 ? '열람' : '미열람',
     createdAt: new Date(Date.now() - (index * 3600000)).toISOString(),

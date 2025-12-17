@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -5,11 +6,25 @@ import { useAuth } from '../contexts/AuthContext'
 export function GuestHeader() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [showDropdown, setShowDropdown] = useState(false)
+  const dropdownRef = useRef(null)
 
   const handleLogout = () => {
     logout()
+    setShowDropdown(false)
     navigate('/')
   }
+
+  // 드롭다운 외부 클릭 감지
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
@@ -27,21 +42,51 @@ export function GuestHeader() {
           {user ? (
             <>
               <Link
-                to="/my-requests"
+                to="/quotes"
                 className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
               >
-                내 요청
+                받은 요청
               </Link>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
+              <Link
+                to="/quotes"
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                title="채팅"
               >
-                로그아웃
-              </button>
-              <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center">
-                <span className="text-violet-600 font-medium text-sm">
-                  {user.name?.charAt(0) || 'U'}
-                </span>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </Link>
+              {/* 프로필 드롭다운 */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center hover:bg-violet-200 transition-colors"
+                >
+                  <span className="text-violet-600 font-medium text-sm">
+                    {user.name?.charAt(0) || 'U'}
+                  </span>
+                </button>
+                {showDropdown && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <p className="font-medium text-gray-900">{user.name || '사용자'}</p>
+                      <p className="text-sm text-gray-500">{user.email}</p>
+                    </div>
+                    <Link
+                      to="/mypage"
+                      onClick={() => setShowDropdown(false)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      마이페이지
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      로그아웃
+                    </button>
+                  </div>
+                )}
               </div>
             </>
           ) : (

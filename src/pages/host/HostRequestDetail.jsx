@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { getHostByUserId, formatPrice } from '../../stores/hostStore'
-import { getRequest } from '../../stores/requestStore'
+import { getRequest, markRequestAsViewed } from '../../stores/requestStore'
 import { getQuotesByRequest } from '../../stores/quoteStore'
 
 export default function HostRequestDetail() {
@@ -35,6 +35,11 @@ export default function HostRequestDetail() {
       return
     }
     setRequest(requestData)
+
+    // 요청을 확인했다고 표시
+    if (hostData) {
+      markRequestAsViewed(requestId, hostData.id)
+    }
 
     // 이 요청에 대해 발송한 견적 확인
     const quotes = getQuotesByRequest(requestId)
@@ -206,7 +211,7 @@ export default function HostRequestDetail() {
             </div>
 
             <Link
-              to={`/host/quotes/create?requestId=${requestId}`}
+              to={`/host/quotes/sheet?requestId=${requestId}`}
               className="block w-full py-4 bg-violet-600 text-white font-semibold rounded-full hover:bg-violet-700 transition-colors text-center"
             >
               견적서 작성하기

@@ -21,6 +21,37 @@ import HostDashboard from './pages/host/HostDashboard'
 import HostRequests from './pages/host/HostRequests'
 import HostRequestDetail from './pages/host/HostRequestDetail'
 import HostQuoteCreate from './pages/host/HostQuoteCreate'
+import HostQuoteSheet from './pages/host/HostQuoteSheet'
+import HostQuoteTemplates from './pages/host/HostQuoteTemplates'
+
+// Phase 4 - Host Chat & Auto Quote
+import HostChatList from './pages/host/HostChatList'
+import HostChatRoom from './pages/host/HostChatRoom'
+import HostAutoQuote from './pages/host/HostAutoQuote'
+
+// Phase 5 - Host Management
+import HostSpaces from './pages/host/HostSpaces'
+import HostPayments from './pages/host/HostPayments'
+import HostSettlements from './pages/host/HostSettlements'
+import HostWallet from './pages/host/HostWallet'
+import HostWalletCharge from './pages/host/HostWalletCharge'
+import HostWalletAutoCharge from './pages/host/HostWalletAutoCharge'
+import HostNotifications from './pages/host/HostNotifications'
+import HostMyPage from './pages/host/HostMyPage'
+
+// Phase 6 - Admin Pages
+import AdminLogin from './pages/admin/AdminLogin'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminRequests from './pages/admin/AdminRequests'
+import AdminQuotes from './pages/admin/AdminQuotes'
+import AdminGuests from './pages/admin/AdminGuests'
+import AdminHosts from './pages/admin/AdminHosts'
+import AdminTransactions from './pages/admin/AdminTransactions'
+import AdminSettlements from './pages/admin/AdminSettlements'
+import AdminChats from './pages/admin/AdminChats'
+import AdminReports from './pages/admin/AdminReports'
+import AdminCash from './pages/admin/AdminCash'
+import AdminSettings from './pages/admin/AdminSettings'
 
 function App() {
   return (
@@ -53,6 +84,37 @@ function App() {
           <Route path="/host/requests" element={<HostRequests />} />
           <Route path="/host/requests/:requestId" element={<HostRequestDetail />} />
           <Route path="/host/quotes/create" element={<HostQuoteCreate />} />
+          <Route path="/host/quotes/sheet" element={<HostQuoteSheet />} />
+          <Route path="/host/quote-templates" element={<HostQuoteTemplates />} />
+
+          {/* Phase 4 - Host Chat & Auto Quote */}
+          <Route path="/host/chats" element={<HostChatList />} />
+          <Route path="/host/chats/:roomId" element={<HostChatRoom />} />
+          <Route path="/host/auto-quote" element={<HostAutoQuote />} />
+
+          {/* Phase 5 - Host Management */}
+          <Route path="/host/spaces" element={<HostSpaces />} />
+          <Route path="/host/payments" element={<HostPayments />} />
+          <Route path="/host/settlements" element={<HostSettlements />} />
+          <Route path="/host/wallet" element={<HostWallet />} />
+          <Route path="/host/wallet/charge" element={<HostWalletCharge />} />
+          <Route path="/host/wallet/auto-charge" element={<HostWalletAutoCharge />} />
+          <Route path="/host/notifications" element={<HostNotifications />} />
+          <Route path="/host/mypage" element={<HostMyPage />} />
+
+          {/* Phase 6 - Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/requests" element={<AdminRequests />} />
+          <Route path="/admin/quotes" element={<AdminQuotes />} />
+          <Route path="/admin/guests" element={<AdminGuests />} />
+          <Route path="/admin/hosts" element={<AdminHosts />} />
+          <Route path="/admin/transactions" element={<AdminTransactions />} />
+          <Route path="/admin/settlements" element={<AdminSettlements />} />
+          <Route path="/admin/chats" element={<AdminChats />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
+          <Route path="/admin/cash" element={<AdminCash />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
         </Routes>
       </Router>
     </AuthProvider>

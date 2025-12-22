@@ -2,9 +2,72 @@
 
 const HOSTS_KEY = 'spacematch_hosts'
 const SPACES_KEY = 'spacematch_spaces'
+const WALLET_HISTORY_KEY = 'spacematch_wallet_history'
 
 // 캐시 단가: 견적 발송 1건당 1,000원
 export const QUOTE_COST = 1000
+
+// ============ 지갑 거래 내역 관리 ============
+
+// 거래 내역 가져오기
+export function getWalletHistory(hostId, type = 'all') {
+  const data = localStorage.getItem(WALLET_HISTORY_KEY)
+  const history = data ? JSON.parse(data) : []
+
+  let filtered = history.filter(h => h.hostId === hostId)
+
+  if (type === 'cash') {
+    filtered = filtered.filter(h => h.type === 'cash')
+  } else if (type === 'points') {
+    filtered = filtered.filter(h => h.type === 'points')
+  }
+
+  return filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+}
+
+// 거래 내역 추가
+function addWalletHistory(hostId, data) {
+  const history = JSON.parse(localStorage.getItem(WALLET_HISTORY_KEY) || '[]')
+
+  history.push({
+    id: `wh_${Date.now()}`,
+    hostId,
+    ...data,
+    createdAt: new Date().toISOString()
+  })
+
+  localStorage.setItem(WALLET_HISTORY_KEY, JSON.stringify(history))
+}
+
+// Mock 지갑 거래 내역 초기화
+export function initMockWalletHistory(hostId) {
+  const existing = localStorage.getItem(WALLET_HISTORY_KEY)
+  if (existing) return
+
+  const mockHistory = [
+    // 캐시 내역
+    { hostId, type: 'cash', action: 'charge', amount: 50000, balance: 50000, description: '캐시 충전 (카드)', createdAt: '2024-11-15T10:00:00Z' },
+    { hostId, type: 'cash', action: 'use', amount: -1000, balance: 49000, description: '견적 발송 - 스튜디오 촬영', createdAt: '2024-11-18T14:30:00Z' },
+    { hostId, type: 'cash', action: 'use', amount: -1000, balance: 48000, description: '견적 발송 - 파티룸 예약', createdAt: '2024-11-20T09:15:00Z' },
+    { hostId, type: 'cash', action: 'charge', amount: 30000, balance: 78000, description: '캐시 충전 (카드)', createdAt: '2024-12-01T11:00:00Z' },
+    { hostId, type: 'cash', action: 'use', amount: -1000, balance: 77000, description: '견적 발송 - 세미나실', createdAt: '2024-12-05T16:45:00Z' },
+
+    // 포인트 내역
+    { hostId, type: 'points', action: 'earn', amount: 3000, balance: 3000, description: '신규 가입 보너스', createdAt: '2024-11-10T09:00:00Z' },
+    { hostId, type: 'points', action: 'earn', amount: 2000, balance: 5000, description: '12월 프로모션 지급', createdAt: '2024-12-01T00:00:00Z' },
+    { hostId, type: 'points', action: 'use', amount: -1000, balance: 4000, description: '견적 발송 - 연습실', createdAt: '2024-12-10T13:20:00Z' },
+    { hostId, type: 'points', action: 'use', amount: -1000, balance: 3000, description: '견적 발송 - 루프탑', createdAt: '2024-12-15T10:30:00Z' },
+  ]
+
+  localStorage.setItem(WALLET_HISTORY_KEY, JSON.stringify(mockHistory))
+}
+
+// 잔액 확인 (견적 발송 가능 여부)
+export function canAffordQuote(hostId) {
+  const host = getHost(hostId)
+  if (!host) return false
+  return (host.cash + host.points) >= QUOTE_COST
+}
 
 // ============ 호스트 관리 ============
 
@@ -70,7 +133,7 @@ export function updateHost(hostId, updates) {
 }
 
 // 캐시 차감 (견적 발송 시)
-export function deductCash(hostId, amount = QUOTE_COST) {
+export function deductCash(hostId, amount = QUOTE_COST, description = '견적 발송') {
   const host = getHost(hostId)
   if (!host) {
     throw new Error('호스트를 찾을 수 없습니다.')
@@ -93,35 +156,78 @@ export function deductCash(hostId, amount = QUOTE_COST) {
     cashUsed = remainingAmount
   }
 
-  return updateHost(hostId, {
+  const updatedHost = updateHost(hostId, {
     cash: host.cash - cashUsed,
     points: host.points - pointsUsed,
     totalQuotesSent: host.totalQuotesSent + 1,
   })
+
+  // 거래 내역 기록
+  if (pointsUsed > 0) {
+    addWalletHistory(hostId, {
+      type: 'points',
+      action: 'use',
+      amount: -pointsUsed,
+      balance: updatedHost.points,
+      description
+    })
+  }
+
+  if (cashUsed > 0) {
+    addWalletHistory(hostId, {
+      type: 'cash',
+      action: 'use',
+      amount: -cashUsed,
+      balance: updatedHost.cash,
+      description
+    })
+  }
+
+  return updatedHost
 }
 
 // 캐시 충전
-export function addCash(hostId, amount) {
+export function addCash(hostId, amount, description = '캐시 충전') {
   const host = getHost(hostId)
   if (!host) {
     throw new Error('호스트를 찾을 수 없습니다.')
   }
 
-  return updateHost(hostId, {
+  const updatedHost = updateHost(hostId, {
     cash: host.cash + amount,
   })
+
+  addWalletHistory(hostId, {
+    type: 'cash',
+    action: 'charge',
+    amount: amount,
+    balance: updatedHost.cash,
+    description
+  })
+
+  return updatedHost
 }
 
 // 포인트 지급
-export function addPoints(hostId, amount) {
+export function addPoints(hostId, amount, description = '포인트 지급') {
   const host = getHost(hostId)
   if (!host) {
     throw new Error('호스트를 찾을 수 없습니다.')
   }
 
-  return updateHost(hostId, {
+  const updatedHost = updateHost(hostId, {
     points: host.points + amount,
   })
+
+  addWalletHistory(hostId, {
+    type: 'points',
+    action: 'earn',
+    amount: amount,
+    balance: updatedHost.points,
+    description
+  })
+
+  return updatedHost
 }
 
 // ============ 공간 관리 ============
@@ -260,6 +366,9 @@ export default {
   deductCash,
   addCash,
   addPoints,
+  getWalletHistory,
+  initMockWalletHistory,
+  canAffordQuote,
   getAllSpaces,
   getSpacesByHost,
   getSpace,

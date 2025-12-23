@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import AdminLayout from '../../components/AdminLayout'
 import { getTransactionList, formatPrice, formatDateTime } from '../../stores/adminStore'
 
@@ -16,7 +17,10 @@ export default function AdminTransactions() {
     return transactions.filter(t => t.status === filter)
   }
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status, refundRequested) => {
+    if (refundRequested && status === 'completed') {
+      return <span className="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-700 rounded-full">환불요청중</span>
+    }
     switch (status) {
       case 'pending':
         return <span className="px-2 py-1 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">결제대기</span>
@@ -93,7 +97,7 @@ export default function AdminTransactions() {
                     <td className="px-6 py-4 text-gray-700">{tx.hostName}</td>
                     <td className="px-6 py-4 text-gray-700">{tx.spaceName}</td>
                     <td className="px-6 py-4 text-right font-medium text-gray-900">{formatPrice(tx.amount)}원</td>
-                    <td className="px-6 py-4 text-center">{getStatusBadge(tx.status)}</td>
+                    <td className="px-6 py-4 text-center">{getStatusBadge(tx.status, tx.refundRequested)}</td>
                     <td className="px-6 py-4 text-sm text-gray-500 text-right">{formatDateTime(tx.paidAt)}</td>
                   </tr>
                 ))}
@@ -142,8 +146,24 @@ export default function AdminTransactions() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">상태</span>
-                {getStatusBadge(selectedTx.status)}
+                {getStatusBadge(selectedTx.status, selectedTx.refundRequested)}
               </div>
+              {selectedTx.refundRequested && (
+                <Link
+                  to="/admin/refunds"
+                  className="block p-3 bg-orange-50 border border-orange-200 rounded-xl hover:bg-orange-100 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-orange-700">환불 요청 접수됨</p>
+                      <p className="text-xs text-orange-600 mt-0.5">환불 관리에서 처리해주세요</p>
+                    </div>
+                    <svg className="w-5 h-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </Link>
+              )}
               <div className="flex justify-between">
                 <span className="text-gray-600">결제일</span>
                 <span className="font-medium">{formatDateTime(selectedTx.paidAt)}</span>

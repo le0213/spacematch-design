@@ -59,6 +59,11 @@ import AdminChats from './pages/admin/AdminChats'
 import AdminReports from './pages/admin/AdminReports'
 import AdminCash from './pages/admin/AdminCash'
 import AdminSettings from './pages/admin/AdminSettings'
+import AdminRefunds from './pages/admin/AdminRefunds'
+import AdminNotifications from './pages/admin/AdminNotifications'
+import AdminSpaces from './pages/admin/AdminSpaces'
+import AdminBusinessVerification from './pages/admin/AdminBusinessVerification'
+import AdminAutoQuotes from './pages/admin/AdminAutoQuotes'
 
 function App() {
   return (
@@ -129,6 +134,11 @@ function App() {
           <Route path="/admin/reports" element={<AdminReports />} />
           <Route path="/admin/cash" element={<AdminCash />} />
           <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/refunds" element={<AdminRefunds />} />
+          <Route path="/admin/notifications" element={<AdminNotifications />} />
+          <Route path="/admin/spaces" element={<AdminSpaces />} />
+          <Route path="/admin/business-verification" element={<AdminBusinessVerification />} />
+          <Route path="/admin/auto-quotes" element={<AdminAutoQuotes />} />
         </Routes>
       </Router>
     </AuthProvider>

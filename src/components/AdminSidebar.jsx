@@ -14,7 +14,8 @@ const menuItems = [
     label: '요청/견적',
     children: [
       { label: '요청 관리', path: '/admin/requests' },
-      { label: '견적 관리', path: '/admin/quotes' }
+      { label: '견적 관리', path: '/admin/quotes' },
+      { label: '바로견적 모니터링', path: '/admin/auto-quotes' }
     ],
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -26,7 +27,8 @@ const menuItems = [
     label: '회원',
     children: [
       { label: '게스트 관리', path: '/admin/guests' },
-      { label: '호스트 관리', path: '/admin/hosts' }
+      { label: '호스트 관리', path: '/admin/hosts' },
+      { label: '사업자 검증', path: '/admin/business-verification' }
     ],
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -35,9 +37,19 @@ const menuItems = [
     )
   },
   {
+    label: '공간',
+    path: '/admin/spaces',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    )
+  },
+  {
     label: '거래/정산',
     children: [
       { label: '거래 관리', path: '/admin/transactions' },
+      { label: '환불 관리', path: '/admin/refunds' },
       { label: '정산 관리', path: '/admin/settlements' }
     ],
     icon: (
@@ -47,10 +59,11 @@ const menuItems = [
     )
   },
   {
-    label: 'CS/신고',
+    label: 'CS/운영',
     children: [
       { label: '채팅 모니터링', path: '/admin/chats' },
-      { label: '신고 관리', path: '/admin/reports' }
+      { label: '신고 관리', path: '/admin/reports' },
+      { label: '알림 관리', path: '/admin/notifications' }
     ],
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

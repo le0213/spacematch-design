@@ -81,7 +81,7 @@ export default function AdminSettings() {
 
           {/* Auto Quote */}
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="font-semibold text-gray-900">바로견적 기능</h2>
                 <p className="text-sm text-gray-500 mt-1">호스트의 바로견적 기능 활성화 여부</p>
@@ -94,6 +94,113 @@ export default function AdminSettings() {
               >
                 <span className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow transition-transform ${
                   settings.autoQuoteEnabled ? 'translate-x-7' : 'translate-x-1'
+                }`} />
+              </button>
+            </div>
+            <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">시간당 발송 제한</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={settings.autoQuoteHourlyLimit || 10}
+                    onChange={(e) => setSettings({ ...settings, autoQuoteHourlyLimit: parseInt(e.target.value) || 10 })}
+                    min="1"
+                    max="100"
+                    className="w-full px-4 py-2 pr-12 border border-gray-200 rounded-lg focus:border-violet-500 outline-none"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">건</span>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">호스트당 1시간 내 발송 가능한 바로견적 수를 제한합니다.</p>
+          </div>
+
+          {/* Refund Policy */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h2 className="font-semibold text-gray-900 mb-4">환불 정책</h2>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">7일 이상 (이용일 기준)</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={settings.refundPolicy?.over7Days || 100}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        refundPolicy: { ...settings.refundPolicy, over7Days: parseInt(e.target.value) || 100 }
+                      })}
+                      className="w-full px-4 py-2 pr-8 border border-gray-200 rounded-lg focus:border-violet-500 outline-none"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">%</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">3~6일</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={settings.refundPolicy?.days3to6 || 70}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        refundPolicy: { ...settings.refundPolicy, days3to6: parseInt(e.target.value) || 70 }
+                      })}
+                      className="w-full px-4 py-2 pr-8 border border-gray-200 rounded-lg focus:border-violet-500 outline-none"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">%</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">1~2일</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={settings.refundPolicy?.days1to2 || 50}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        refundPolicy: { ...settings.refundPolicy, days1to2: parseInt(e.target.value) || 50 }
+                      })}
+                      className="w-full px-4 py-2 pr-8 border border-gray-200 rounded-lg focus:border-violet-500 outline-none"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">%</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">당일</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={settings.refundPolicy?.sameDay || 0}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        refundPolicy: { ...settings.refundPolicy, sameDay: parseInt(e.target.value) || 0 }
+                      })}
+                      className="w-full px-4 py-2 pr-8 border border-gray-200 rounded-lg focus:border-violet-500 outline-none"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">%</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500">이용 예정일까지 남은 기간에 따른 환불률을 설정합니다.</p>
+            </div>
+          </div>
+
+          {/* Business Verification */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-semibold text-gray-900">사업자 검증 필수</h2>
+                <p className="text-sm text-gray-500 mt-1">호스트의 견적 발송 전 사업자 검증 필수 여부</p>
+              </div>
+              <button
+                onClick={() => setSettings({ ...settings, businessVerificationRequired: !settings.businessVerificationRequired })}
+                className={`relative w-14 h-8 rounded-full transition-colors ${
+                  settings.businessVerificationRequired ? 'bg-violet-600' : 'bg-gray-300'
+                }`}
+              >
+                <span className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow transition-transform ${
+                  settings.businessVerificationRequired ? 'translate-x-7' : 'translate-x-1'
                 }`} />
               </button>
             </div>

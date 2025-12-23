@@ -1,14 +1,28 @@
 import { useState, useEffect } from 'react'
 import AdminLayout from '../../components/AdminLayout'
-import { getDashboardStats, getAlerts, formatPrice } from '../../stores/adminStore'
+import { Link } from 'react-router-dom'
+import {
+  getDashboardStats,
+  getAlerts,
+  formatPrice,
+  getRefundStats,
+  getBusinessVerificationStats,
+  getAutoQuoteStats
+} from '../../stores/adminStore'
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null)
   const [alerts, setAlerts] = useState([])
+  const [refundStats, setRefundStats] = useState(null)
+  const [verificationStats, setVerificationStats] = useState(null)
+  const [autoQuoteStats, setAutoQuoteStats] = useState(null)
 
   useEffect(() => {
     setStats(getDashboardStats())
     setAlerts(getAlerts())
+    setRefundStats(getRefundStats())
+    setVerificationStats(getBusinessVerificationStats())
+    setAutoQuoteStats(getAutoQuoteStats())
   }, [])
 
   const getSeverityColor = (severity) => {
@@ -95,6 +109,55 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* Additional Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {/* 환불 요청 대기 */}
+          <Link to="/admin/refunds" className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">환불 요청 대기</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{refundStats?.pending || 0}건</p>
+              </div>
+              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                </svg>
+              </div>
+            </div>
+          </Link>
+
+          {/* 사업자 검증 대기 */}
+          <Link to="/admin/business-verification" className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">사업자 검증 대기</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{verificationStats?.pending || 0}건</p>
+              </div>
+              <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+            </div>
+          </Link>
+
+          {/* 바로견적 발송 현황 */}
+          <Link to="/admin/auto-quotes" className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">오늘 바로견적</p>
+                <p className="text-2xl font-bold text-gray-900 mt-1">{autoQuoteStats?.todaySent || 0}건</p>
+                <p className="text-xs text-gray-400 mt-0.5">성사율 {autoQuoteStats?.successRate || 0}%</p>
+              </div>
+              <div className="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+            </div>
+          </Link>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Alerts Section */}

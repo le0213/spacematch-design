@@ -49,12 +49,13 @@ const createMockChatRooms = (hostId) => [
     id: 'chat-mock-4',
     hostId: hostId,
     guest: { name: '최수진', profileImage: null },
-    quote: { spaceName: '성수 연습실', price: 80000 },
+    quote: { spaceName: '성수 연습실', price: 80000, isAutoQuote: true },
     lastMessage: '주차 가능한가요?',
     lastMessageAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
     unreadCount: { [hostId]: 3 },
     status: 'ongoing',
-    isFavorite: false
+    isFavorite: false,
+    isAutoQuote: true
   },
   {
     id: 'chat-mock-5',
@@ -120,6 +121,11 @@ function ChatRoomCard({ room, hostId, onToggleFavorite }) {
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               <h3 className="font-medium text-gray-900 truncate">{guest.name || '게스트'}</h3>
+              {(room.isAutoQuote || quote.isAutoQuote) && (
+                <span className="px-2 py-0.5 bg-violet-100 text-violet-700 text-xs font-medium rounded-full">
+                  바로견적
+                </span>
+              )}
               {room.status === 'ongoing' && (
                 <span className="px-2 py-0.5 bg-red-100 text-red-600 text-xs font-medium rounded-full">
                   거래중

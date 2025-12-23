@@ -232,27 +232,33 @@ export function addAutoQuoteLog(hostId, logData) {
   return newLog
 }
 
-// 견적 템플릿 관련
+// 견적 템플릿 관련 - quoteTemplateStore에서 가져오기
 export function getQuoteTemplates(hostId) {
-  // Mock 템플릿 데이터
+  // quoteTemplateStore에서 자주 쓰는 견적 가져오기
+  const QUOTE_TEMPLATE_KEY = 'spacematch_quote_templates'
+  const data = localStorage.getItem(QUOTE_TEMPLATE_KEY)
+  if (data) {
+    const templates = JSON.parse(data)
+    const hostTemplates = templates.filter(t => t.hostId === hostId)
+    // autoQuote에서 사용하는 형식으로 변환
+    return hostTemplates.map(t => ({
+      id: t.id,
+      name: t.name,
+      price: t.totalPrice,
+      description: t.description,
+      items: t.items,
+      estimatedDuration: t.estimatedDuration,
+      isDefault: t.isDefault,
+    }))
+  }
+  // 기본 템플릿 반환
   return [
     {
-      id: 'template_1',
-      name: '기본 회의실 견적',
+      id: 'template_default_1',
+      name: '기본 견적',
       price: 100000,
-      description: '4시간 기준 기본 회의실 이용료입니다. 빔프로젝터, 화이트보드 무료 제공.',
-    },
-    {
-      id: 'template_2',
-      name: '프리미엄 견적',
-      price: 200000,
-      description: '프리미엄 서비스 (음료, 다과 포함). 최대 20명 수용 가능.',
-    },
-    {
-      id: 'template_3',
-      name: '촬영 스튜디오 견적',
-      price: 150000,
-      description: '촬영 장비 대여 가능. 자연광 조명 제공.',
+      description: '기본 서비스 견적입니다.',
+      isDefault: true,
     },
   ]
 }

@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { getHostByUserId, getHostStats, formatPrice, createHost, generateMockSpaces } from '../../stores/hostStore'
 import { getPendingRequestsForHost } from '../../stores/requestStore'
+import { getUnreadCountForHost } from '../../stores/chatStore'
+import HostHeader from '../../components/HostHeader'
 
 export default function HostDashboard() {
   const { user, loading: authLoading } = useAuth()
@@ -10,6 +12,7 @@ export default function HostDashboard() {
   const [host, setHost] = useState(null)
   const [stats, setStats] = useState(null)
   const [recentRequests, setRecentRequests] = useState([])
+  const [unreadChats, setUnreadChats] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -44,6 +47,10 @@ export default function HostDashboard() {
     const hostStats = getHostStats(hostData.id)
     setStats(hostStats)
 
+    // 안읽은 채팅 수 로드
+    const unreadCount = getUnreadCountForHost(hostData.id)
+    setUnreadChats(unreadCount)
+
     // 최근 요청 로드 (대기 중인 요청)
     const pendingRequests = getPendingRequestsForHost()
     setRecentRequests(pendingRequests.slice(0, 5))
@@ -61,51 +68,7 @@ export default function HostDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/host" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
-            </div>
-            <span className="font-bold text-xl text-gray-900">스페이스매치</span>
-            <span className="ml-2 px-2 py-0.5 bg-violet-100 text-violet-600 text-xs font-medium rounded">
-              호스트센터
-            </span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/host/dashboard" className="text-sm font-medium text-violet-600">
-              대시보드
-            </Link>
-            <Link to="/host/requests" className="text-sm text-gray-600 hover:text-gray-900">
-              받은 요청
-            </Link>
-            <Link to="/host/chats" className="text-sm text-gray-600 hover:text-gray-900">
-              채팅
-            </Link>
-            <Link to="/host/settings" className="text-sm text-gray-600 hover:text-gray-900">
-              설정
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <div className="text-xs text-gray-500">보유 캐시</div>
-              <div className="font-semibold text-violet-600">{formatPrice(stats?.totalBalance || 0)}원</div>
-            </div>
-            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-              {user?.name ? (
-                <span className="text-sm font-medium">{user.name[0]}</span>
-              ) : (
-                <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <HostHeader stats={stats} unreadChats={unreadChats} />
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Welcome */}

@@ -15,6 +15,7 @@ import {
   resendQuote,
 } from '../../stores/chatStore'
 import QuoteCardModal from '../../components/QuoteCardModal'
+import SpaceInfoCard from '../../components/SpaceInfoCard'
 
 // Message Components
 function SystemMessage({ content }) {
@@ -397,13 +398,17 @@ function GuestInfoPanel({ room, request, onToggleFavorite }) {
       {quote && (
         <div className="p-6 border-b border-gray-100">
           <h4 className="font-medium text-gray-900 mb-4">발송한 견적</h4>
-          <div className="p-4 bg-gray-50 rounded-xl">
+          <div className="p-4 bg-gray-50 rounded-xl mb-3">
             <p className="font-medium text-gray-900 mb-2">{quote.spaceName}</p>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">견적 금액</span>
               <span className="font-semibold text-violet-600">{formatPrice(quote.price)}원</span>
             </div>
           </div>
+          {/* 공간 정보 - 스페이스클라우드 연동 */}
+          {quote.space && (
+            <SpaceInfoCard space={quote.space} variant="compact" />
+          )}
         </div>
       )}
 

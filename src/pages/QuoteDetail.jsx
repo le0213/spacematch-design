@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { GuestHeader } from '../components/Header'
 import Footer from '../components/Footer'
+import SpaceInfoCard from '../components/SpaceInfoCard'
 import { getRequest } from '../stores/requestStore'
 import { getQuotesByRequest, markQuoteAsRead, generateMockQuotes } from '../stores/quoteStore'
 
@@ -210,6 +211,13 @@ export default function QuoteDetail() {
                   ))}
                 </div>
               </div>
+
+              {/* Space Info - 스페이스클라우드 연동 */}
+              {quote.space && (
+                <div className="mb-4" onClick={(e) => e.stopPropagation()}>
+                  <SpaceInfoCard space={quote.space} variant="inline" />
+                </div>
+              )}
 
               {/* Price & CTA */}
               <div className="flex items-center justify-between">

@@ -4,16 +4,62 @@ const NOTIFICATION_KEY = 'spacematch_notifications'
 
 // 알림 타입
 export const NOTIFICATION_TYPES = {
+  // 호스트용
   NEW_REQUEST: 'new_request',      // 새 견적 요청
   NEW_MESSAGE: 'new_message',      // 새 채팅 메시지
   PAYMENT_COMPLETE: 'payment',     // 결제 완료
   SETTLEMENT_COMPLETE: 'settlement', // 정산 완료
   AUTO_QUOTE: 'auto_quote',        // 바로견적 발행
-  SYSTEM: 'system'                 // 시스템 알림
+  SYSTEM: 'system',                // 시스템 알림
+  // 게스트용
+  QUOTE_RECEIVED: 'quote_received', // 견적 도착
+  BOOKING_REMINDER: 'booking_reminder', // 이용 예정 리마인더
+  REFUND_COMPLETE: 'refund_complete', // 환불 완료
+  CANCEL_COMPLETE: 'cancel_complete', // 취소 완료
 }
 
 // 초기 Mock 데이터
 const initialNotifications = {
+  // 게스트 Mock 알림
+  'user_mock_1': [
+    {
+      id: 'noti-g1',
+      type: NOTIFICATION_TYPES.QUOTE_RECEIVED,
+      title: '새 견적이 도착했습니다',
+      content: '강남 프리미엄 회의실에서 견적을 발송했습니다.',
+      link: '/quotes',
+      isRead: false,
+      createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'noti-g2',
+      type: NOTIFICATION_TYPES.NEW_MESSAGE,
+      title: '새 메시지가 있습니다',
+      content: '홍대 스튜디오 호스트가 응답했습니다.',
+      link: '/chat/quote_mock_1',
+      isRead: false,
+      createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'noti-g3',
+      type: NOTIFICATION_TYPES.PAYMENT_COMPLETE,
+      title: '결제가 완료되었습니다',
+      content: '성수 파티룸 예약이 확정되었습니다.',
+      link: '/payments',
+      isRead: true,
+      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'noti-g4',
+      type: NOTIFICATION_TYPES.BOOKING_REMINDER,
+      title: '이용 예정 알림',
+      content: '내일 14:00에 강남 회의실 이용이 예정되어 있습니다.',
+      link: '/payments',
+      isRead: true,
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    },
+  ],
+  // 호스트 Mock 알림
   'host-1': [
     {
       id: 'noti-1',
@@ -193,6 +239,15 @@ export function getNotificationIcon(type) {
       return '💰'
     case NOTIFICATION_TYPES.AUTO_QUOTE:
       return '⚡'
+    // 게스트용
+    case NOTIFICATION_TYPES.QUOTE_RECEIVED:
+      return '📋'
+    case NOTIFICATION_TYPES.BOOKING_REMINDER:
+      return '🔔'
+    case NOTIFICATION_TYPES.REFUND_COMPLETE:
+      return '💰'
+    case NOTIFICATION_TYPES.CANCEL_COMPLETE:
+      return '❌'
     case NOTIFICATION_TYPES.SYSTEM:
     default:
       return '🔔'

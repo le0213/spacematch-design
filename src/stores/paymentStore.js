@@ -2,6 +2,77 @@
 
 const STORAGE_KEY = 'spacematch_payments'
 
+// Mock 데이터 초기화
+const initialPayments = [
+  {
+    id: 'pay_guest_1',
+    quoteId: 'quote_mock_1',
+    guestId: 'user_mock_1',
+    guestName: '김민수',
+    hostId: 'host-1',
+    hostName: '강남 프리미엄 스튜디오',
+    spaceName: '강남 프리미엄 회의실',
+    spaceImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400',
+    amount: 150000,
+    serviceFee: 7500,
+    totalAmount: 157500,
+    useDate: '2025-01-15',
+    useTime: '14:00 - 18:00',
+    usageStatus: '이용예정',
+    status: '결제완료',
+    paymentMethod: 'card',
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    paidAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'pay_guest_2',
+    quoteId: 'quote_mock_2',
+    guestId: 'user_mock_1',
+    guestName: '김민수',
+    hostId: 'host-2',
+    hostName: '홍대 파티룸',
+    spaceName: '홍대 프라이빗 파티룸',
+    spaceImage: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=400',
+    amount: 200000,
+    serviceFee: 10000,
+    totalAmount: 210000,
+    useDate: '2024-12-20',
+    useTime: '18:00 - 22:00',
+    usageStatus: '이용완료',
+    status: '결제완료',
+    paymentMethod: 'kakao',
+    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    paidAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'pay_guest_3',
+    quoteId: 'quote_mock_3',
+    guestId: 'user_mock_1',
+    guestName: '김민수',
+    hostId: 'host-3',
+    hostName: '성수 스튜디오',
+    spaceName: '성수 포토 스튜디오',
+    spaceImage: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=400',
+    amount: 80000,
+    serviceFee: 4000,
+    totalAmount: 84000,
+    useDate: '2024-12-15',
+    useTime: '10:00 - 14:00',
+    usageStatus: '이용완료',
+    status: '결제완료',
+    paymentMethod: 'bank',
+    createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    paidAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+]
+
+// 초기화
+function initPayments() {
+  if (!localStorage.getItem(STORAGE_KEY)) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(initialPayments))
+  }
+}
+
 // 결제 상태 enum
 export const PAYMENT_STATUS = {
   PENDING: '결제대기',
@@ -12,6 +83,7 @@ export const PAYMENT_STATUS = {
 
 // 모든 결제 가져오기
 export function getAllPayments() {
+  initPayments()
   const data = localStorage.getItem(STORAGE_KEY)
   return data ? JSON.parse(data) : []
 }

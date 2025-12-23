@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import SpaceInfoCard from '../components/SpaceInfoCard'
 import { getQuote, getQuotesForUser } from '../stores/quoteStore'
 import { getOrCreateChatRoom, getMessagesByRoom, addMessage } from '../stores/chatStore'
 import { createPayment, getPaymentByQuote, formatPrice } from '../stores/paymentStore'
@@ -265,16 +266,13 @@ function InfoPanel({ host, quote }) {
         </div>
       </div>
 
-      {/* Response Info */}
-      <div className="p-6 border-b border-gray-100">
-        <h4 className="font-medium text-gray-900 mb-3">응답 정보</h4>
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-500">응답률</span>
-            <span className="text-gray-900 font-medium">{host.responseRate}%</span>
-          </div>
+      {/* Space Info - 스페이스클라우드 연동 */}
+      {quote?.space && (
+        <div className="p-4 border-b border-gray-100">
+          <h4 className="font-medium text-gray-900 mb-3">공간 정보</h4>
+          <SpaceInfoCard space={quote.space} variant="compact" />
         </div>
-      </div>
+      )}
 
       {/* Quote Summary */}
       {quote && (
@@ -363,6 +361,25 @@ export default function ChatRoom() {
           responseRate: 98,
         },
         spaceName: '강남 프리미엄 회의실',
+        // 공간 상세 정보 (SpaceInfoCard용)
+        space: {
+          id: 'space_gangnam_meeting',
+          spaceCloudId: 'sc_gangnam_meeting_001',
+          name: '강남 프리미엄 회의실',
+          images: [
+            'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
+            'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800',
+            'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800'
+          ],
+          location: '서울 강남구 테헤란로 강남역 3번 출구 도보 3분',
+          pricePerHour: 30000,
+          capacity: 20,
+          rating: 4.9,
+          reviewCount: 128,
+          amenities: ['빔프로젝터', '화이트보드', 'WiFi', '에어컨', '주차'],
+          description: '강남역 인근 프리미엄 회의실. 세미나, 워크숍, 미팅에 최적화.',
+          spaceCloudUrl: 'https://www.spacecloud.kr/space/sc_gangnam_meeting_001'
+        },
         price: 150000,
         description: '안녕하세요! 강남역 3번 출구에서 도보 3분 거리에 위치한 프리미엄 회의실입니다. 최대 20명 수용 가능하며, 빔프로젝터와 화이트보드를 무료로 제공해드립니다.',
         items: [

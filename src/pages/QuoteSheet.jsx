@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { getQuote } from '../stores/quoteStore'
-import { createPayment, getPaymentByQuote, formatPrice } from '../stores/paymentStore'
+import { formatPrice } from '../stores/paymentStore'
 
 export default function QuoteSheet() {
   const { quoteId } = useParams()
   const { user, loading: authLoading } = useAuth()
-  const navigate = useNavigate()
 
   const [quote, setQuote] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -78,24 +77,6 @@ export default function QuoteSheet() {
       })
     }
     setLoading(false)
-  }
-
-  const handlePayment = () => {
-    const existingPayment = getPaymentByQuote(quote.id)
-
-    if (existingPayment) {
-      navigate(`/payment/${existingPayment.id}`)
-    } else {
-      const payment = createPayment({
-        quoteId: quote.id,
-        guestId: user.id,
-        hostId: quote.host?.id || quote.hostId,
-        amount: quote.price,
-        spaceName: quote.spaceName,
-        hostName: quote.host?.name,
-      })
-      navigate(`/payment/${payment.id}`)
-    }
   }
 
   const generateQuoteNumber = () => {
@@ -327,21 +308,20 @@ export default function QuoteSheet() {
               </div>
             </div>
 
-            {/* Payment Button */}
-            <button
-              onClick={handlePayment}
+            {/* Chat Button */}
+            <Link
+              to={`/chat/${quoteId}`}
               className="w-full py-4 bg-violet-600 text-white font-semibold rounded-xl hover:bg-violet-700 transition-colors flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              결제하기
-            </button>
+              채팅으로 상담하기
+            </Link>
 
             {/* Footer Note */}
             <p className="text-center text-xs text-gray-400 mt-6">
-              스페이스매치 안전결제를 통해 안전하게 거래하세요.
-              스페이스매치 외 결제는 안심결제 대상이 아닙니다.
+              본 견적서는 참고용이며, 결제는 채팅을 통해 진행됩니다.
             </p>
           </div>
         </div>

@@ -249,7 +249,15 @@ export default function HostAutoQuote() {
 
         {/* Template Selection */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">견적 템플릿</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">자주 쓰는 견적</h3>
+            <a
+              href="/host/quote-templates"
+              className="text-sm text-violet-600 hover:text-violet-700 font-medium"
+            >
+              관리하기 →
+            </a>
+          </div>
 
           <div className="space-y-3">
             {templates.map(template => (

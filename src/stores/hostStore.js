@@ -289,26 +289,79 @@ export function updateSpace(spaceId, updates) {
 
 // ============ Mock 데이터 생성 ============
 
-// 호스트용 Mock 공간 생성
+// 스페이스클라우드 URL 생성 헬퍼
+export function getSpaceCloudUrl(spaceCloudId) {
+  if (!spaceCloudId) return 'https://www.spacecloud.kr'
+  return `https://www.spacecloud.kr/space/${spaceCloudId}`
+}
+
+// 호스트용 Mock 공간 생성 (스페이스클라우드 연동 필드 포함)
 export function generateMockSpaces(hostId) {
   const mockSpaces = [
     {
       hostId,
-      name: '프리미엄 청소 서비스',
-      category: '청소',
-      description: '입주/이사 청소, 정기 청소, 특수 청소 전문',
-      image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop',
-      basePrice: 100000,
+      spaceCloudId: 'sc_gangnam_studio_001',
+      name: '강남 프리미엄 스튜디오',
+      category: '스튜디오',
+      description: '강남역 3번 출구 도보 3분. 자연광이 풍부한 프리미엄 촬영 스튜디오입니다. 유튜브, 인스타그램 촬영에 최적화되어 있습니다.',
+      images: [
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&h=600&fit=crop',
+      ],
+      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop',
+      location: '서울 강남구 테헤란로 123',
+      pricePerHour: 30000,
+      basePrice: 30000,
+      capacity: 10,
+      rating: 4.9,
+      reviewCount: 128,
+      amenities: ['WiFi', '주차', '에어컨', '빔프로젝터', '화이트보드'],
       quoteEnabled: true,
+      spaceCloudUrl: 'https://www.spacecloud.kr/space/sc_gangnam_studio_001',
     },
     {
       hostId,
-      name: '에어컨 청소 전문',
-      category: '에어컨',
-      description: '벽걸이, 스탠드, 시스템 에어컨 분해 청소',
-      image: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=300&fit=crop',
-      basePrice: 80000,
+      spaceCloudId: 'sc_hongdae_party_002',
+      name: '홍대 파티룸',
+      category: '파티룸',
+      description: '홍대입구역 5분 거리. 최대 30명 수용 가능한 프라이빗 파티룸. 고급 음향 시스템과 분위기 있는 조명 완비.',
+      images: [
+        'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&h=600&fit=crop',
+      ],
+      image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400&h=300&fit=crop',
+      location: '서울 마포구 와우산로 94',
+      pricePerHour: 50000,
+      basePrice: 50000,
+      capacity: 30,
+      rating: 4.7,
+      reviewCount: 89,
+      amenities: ['음향시스템', '조명', '주방', '냉장고', '마이크'],
       quoteEnabled: true,
+      spaceCloudUrl: 'https://www.spacecloud.kr/space/sc_hongdae_party_002',
+    },
+    {
+      hostId,
+      spaceCloudId: 'sc_seongsu_meeting_003',
+      name: '성수 프리미엄 회의실',
+      category: '회의실',
+      description: '성수역 2번 출구 도보 5분. 20인 규모 세미나 및 회의에 적합한 공간. 무료 음료 서비스 제공.',
+      images: [
+        'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=600&fit=crop',
+      ],
+      image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400&h=300&fit=crop',
+      location: '서울 성동구 연무장길 45',
+      pricePerHour: 40000,
+      basePrice: 40000,
+      capacity: 20,
+      rating: 4.8,
+      reviewCount: 256,
+      amenities: ['WiFi', '빔프로젝터', '화이트보드', '음료무료', '주차'],
+      quoteEnabled: true,
+      spaceCloudUrl: 'https://www.spacecloud.kr/space/sc_seongsu_meeting_003',
     },
   ]
 
@@ -375,6 +428,7 @@ export default {
   createSpace,
   updateSpace,
   generateMockSpaces,
+  getSpaceCloudUrl,
   getHostStats,
   formatPrice,
   QUOTE_COST,

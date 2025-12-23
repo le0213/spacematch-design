@@ -368,6 +368,10 @@ export function getRequestsForHost(hostId, filter = 'all') {
                !quotedRequestIds.includes(r.id)
       })
       break
+    case 'autoQuote':
+      // 바로견적 요청만 필터
+      filtered = allRequests.filter(r => r.isAutoQuote === true)
+      break
     default:
       // 전체
       break

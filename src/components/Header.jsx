@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { getUnreadCount } from '../stores/notificationStore'
 
 // Guest Header - 공간을 찾는 사람용
 export function GuestHeader() {
@@ -8,6 +9,9 @@ export function GuestHeader() {
   const navigate = useNavigate()
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef(null)
+
+  // 안읽은 알림 수 (user_mock_1로 조회)
+  const unreadNotifications = user ? getUnreadCount('user_mock_1') : 0
 
   const handleLogout = () => {
     logout()
@@ -45,16 +49,28 @@ export function GuestHeader() {
                 to="/quotes"
                 className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
               >
-                받은 요청
+                받은 견적
               </Link>
               <Link
-                to="/quotes"
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                title="채팅"
+                to="/payments"
+                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
+              >
+                결제 내역
+              </Link>
+              {/* 알림 아이콘 */}
+              <Link
+                to="/notifications"
+                className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                title="알림"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
+                {unreadNotifications > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-xs font-medium rounded-full flex items-center justify-center">
+                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                  </span>
+                )}
               </Link>
               {/* 프로필 드롭다운 */}
               <div className="relative" ref={dropdownRef}>
@@ -78,6 +94,13 @@ export function GuestHeader() {
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
                       마이페이지
+                    </Link>
+                    <Link
+                      to="/refunds"
+                      onClick={() => setShowDropdown(false)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      취소/환불 내역
                     </Link>
                     <button
                       onClick={handleLogout}

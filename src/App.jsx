@@ -16,6 +16,12 @@ import Payment from './pages/Payment'
 import PaymentComplete from './pages/PaymentComplete'
 import QuoteSheet from './pages/QuoteSheet'
 
+// Guest Pages
+import GuestMyPage from './pages/GuestMyPage'
+import GuestPayments from './pages/GuestPayments'
+import GuestRefunds from './pages/GuestRefunds'
+import GuestNotifications from './pages/GuestNotifications'
+
 // Phase 3 - Host Pages
 import HostDashboard from './pages/host/HostDashboard'
 import HostRequests from './pages/host/HostRequests'
@@ -38,6 +44,7 @@ import HostWalletCharge from './pages/host/HostWalletCharge'
 import HostWalletAutoCharge from './pages/host/HostWalletAutoCharge'
 import HostNotifications from './pages/host/HostNotifications'
 import HostMyPage from './pages/host/HostMyPage'
+import HostBusiness from './pages/host/HostBusiness'
 
 // Phase 6 - Admin Pages
 import AdminLogin from './pages/admin/AdminLogin'
@@ -71,6 +78,12 @@ function App() {
           <Route path="/payment/:paymentId" element={<Payment />} />
           <Route path="/payment-complete/:paymentId" element={<PaymentComplete />} />
 
+          {/* Guest Account Routes */}
+          <Route path="/mypage" element={<GuestMyPage />} />
+          <Route path="/payments" element={<GuestPayments />} />
+          <Route path="/refunds" element={<GuestRefunds />} />
+          <Route path="/notifications" element={<GuestNotifications />} />
+
           {/* Auth Routes */}
           <Route path="/login" element={<Auth />} />
           <Route path="/signup" element={<Auth />} />
@@ -101,6 +114,7 @@ function App() {
           <Route path="/host/wallet/auto-charge" element={<HostWalletAutoCharge />} />
           <Route path="/host/notifications" element={<HostNotifications />} />
           <Route path="/host/mypage" element={<HostMyPage />} />
+          <Route path="/host/business" element={<HostBusiness />} />
 
           {/* Phase 6 - Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />

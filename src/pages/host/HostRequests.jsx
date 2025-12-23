@@ -25,7 +25,8 @@ export default function HostRequests() {
   const tabs = [
     { id: 'all', label: '전체' },
     { id: 'pending', label: '대기중' },
-    { id: 'quoted', label: '견적 발송 완료' }
+    { id: 'quoted', label: '견적 발송 완료' },
+    { id: 'autoQuote', label: '바로견적' }
   ]
 
   useEffect(() => {
@@ -201,11 +202,11 @@ export default function HostRequests() {
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         {/* 상태 뱃지 */}
                         <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                          quote
+                          (quote || request.isAutoQuote)
                             ? 'bg-green-100 text-green-700'
                             : 'bg-yellow-100 text-yellow-700'
                         }`}>
-                          {quote ? '견적 발송 완료' : '대기중'}
+                          {(quote || request.isAutoQuote) ? '견적 발송 완료' : '대기중'}
                         </span>
 
                         {/* 바로견적 뱃지 */}
@@ -275,20 +276,22 @@ export default function HostRequests() {
 
                   {/* Action Hint & Quote Info */}
                   <div className="mt-3 pt-3 border-t border-gray-100">
-                    {quote ? (
+                    {(quote || request.isAutoQuote) ? (
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="flex items-center gap-2">
                             <span className="text-sm text-gray-500">발송 견적:</span>
-                            <span className="text-sm font-semibold text-gray-900">{formatPrice(quote.price)}원</span>
+                            <span className="text-sm font-semibold text-gray-900">{formatPrice(quote?.price || 0)}원</span>
                           </div>
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            quote.status === '열람'
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-gray-100 text-gray-600'
-                          }`}>
-                            {quote.status}
-                          </span>
+                          {quote && (
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              quote.status === '열람'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              {quote.status}
+                            </span>
+                          )}
                         </div>
                         <span className="text-sm text-violet-600 font-medium">견적서 확인하기 →</span>
                       </div>

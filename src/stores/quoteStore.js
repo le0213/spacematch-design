@@ -19,6 +19,25 @@ const initialMockQuotes = [
       responseRate: 95
     },
     spaceName: '홍대 파티룸',
+    // 공간 상세 정보 (SpaceInfoCard용)
+    space: {
+      id: 'space_hongdae_party',
+      spaceCloudId: 'sc_hongdae_party_001',
+      name: '홍대 프라이빗 파티룸',
+      images: [
+        'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800',
+        'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800',
+        'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800'
+      ],
+      location: '서울 마포구 홍대입구역 인근',
+      pricePerHour: 40000,
+      capacity: 20,
+      rating: 4.8,
+      reviewCount: 156,
+      amenities: ['음향시스템', '조명', '주방', 'WiFi', '에어컨'],
+      description: '홍대 중심가에 위치한 프라이빗 파티룸. 생일파티, 송년회, 팀 행사에 최적화된 공간입니다.',
+      spaceCloudUrl: 'https://www.spacecloud.kr/space/sc_hongdae_party_001'
+    },
     price: 220000,
     description: '안녕하세요! 송년회에 딱 맞는 파티룸입니다. 최대 20명까지 수용 가능하며, 고급 음향 시스템과 분위기 있는 조명을 제공합니다.',
     items: [
@@ -49,6 +68,24 @@ const initialMockQuotes = [
       responseRate: 95
     },
     spaceName: '성수 연습실',
+    // 공간 상세 정보 (SpaceInfoCard용)
+    space: {
+      id: 'space_seongsu_studio',
+      spaceCloudId: 'sc_seongsu_studio_001',
+      name: '성수 밴드 연습실',
+      images: [
+        'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800',
+        'https://images.unsplash.com/photo-1511735111819-9a3f7709049c?w=800'
+      ],
+      location: '서울 성동구 성수역 도보 5분',
+      pricePerHour: 25000,
+      capacity: 8,
+      rating: 4.6,
+      reviewCount: 89,
+      amenities: ['드럼', '앰프', '마이크', '방음', '에어컨'],
+      description: '밴드 연습에 최적화된 방음 연습실. 드럼, 앰프, 마이크 기본 제공.',
+      spaceCloudUrl: 'https://www.spacecloud.kr/space/sc_seongsu_studio_001'
+    },
     price: 80000,
     description: '밴드 연습에 최적화된 방음 연습실입니다. 드럼, 앰프, 마이크 등 기본 장비가 완비되어 있습니다.',
     items: [
@@ -79,6 +116,25 @@ const initialMockQuotes = [
       responseRate: 95
     },
     spaceName: '강남 스튜디오',
+    // 공간 상세 정보 (SpaceInfoCard용)
+    space: {
+      id: 'space_gangnam_studio',
+      spaceCloudId: 'sc_gangnam_studio_001',
+      name: '강남 프리미엄 촬영 스튜디오',
+      images: [
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
+        'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800',
+        'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800'
+      ],
+      location: '서울 강남구 테헤란로 123',
+      pricePerHour: 50000,
+      capacity: 15,
+      rating: 4.9,
+      reviewCount: 234,
+      amenities: ['그린스크린', '조명장비', '편집실', 'WiFi', '주차'],
+      description: '유튜브, 광고 촬영에 특화된 프리미엄 스튜디오. 전문 장비 완비.',
+      spaceCloudUrl: 'https://www.spacecloud.kr/space/sc_gangnam_studio_001'
+    },
     price: 350000,
     description: '유튜브 촬영에 특화된 프리미엄 스튜디오입니다. 그린스크린, 전문 조명, 고급 카메라 장비를 제공합니다.',
     items: [
@@ -184,6 +240,20 @@ export function markQuoteAsRead(quoteId) {
   return updateQuote(quoteId, { status: '열람' })
 }
 
+// 견적 내용 수정 (호스트가 수정)
+export function updateQuoteContent(quoteId, contentUpdates) {
+  const quote = getQuote(quoteId)
+  if (!quote) {
+    throw new Error('견적을 찾을 수 없습니다.')
+  }
+
+  return updateQuote(quoteId, {
+    ...contentUpdates,
+    isModified: true,
+    modifiedAt: new Date().toISOString(),
+  })
+}
+
 // ============ 바로견적 관련 ============
 
 // 바로견적 여부 확인
@@ -241,6 +311,63 @@ export function generateMockQuotes(requestId, guestId) {
     },
   ]
 
+  // 공간 상세 정보 (SpaceInfoCard용)
+  const mockSpaces = [
+    {
+      id: 'space_gangnam_meeting',
+      spaceCloudId: 'sc_gangnam_meeting_001',
+      name: '강남 프리미엄 회의실',
+      images: [
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
+        'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800',
+        'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800'
+      ],
+      location: '서울 강남구 테헤란로 강남역 3번 출구 도보 3분',
+      pricePerHour: 30000,
+      capacity: 20,
+      rating: 4.9,
+      reviewCount: 128,
+      amenities: ['빔프로젝터', '화이트보드', 'WiFi', '에어컨', '주차'],
+      description: '강남역 인근 프리미엄 회의실. 세미나, 워크숍, 미팅에 최적화.',
+      spaceCloudUrl: 'https://www.spacecloud.kr/space/sc_gangnam_meeting_001'
+    },
+    {
+      id: 'space_hongdae_studio',
+      spaceCloudId: 'sc_hongdae_studio_001',
+      name: '홍대 감성 스튜디오',
+      images: [
+        'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800',
+        'https://images.unsplash.com/photo-1511735111819-9a3f7709049c?w=800'
+      ],
+      location: '서울 마포구 홍대입구역 인근',
+      pricePerHour: 35000,
+      capacity: 12,
+      rating: 4.7,
+      reviewCount: 89,
+      amenities: ['자연광', '촬영장비', '조명', 'WiFi', '에어컨'],
+      description: '자연광이 좋은 감성 스튜디오. 촬영, 소규모 세미나에 최적화.',
+      spaceCloudUrl: 'https://www.spacecloud.kr/space/sc_hongdae_studio_001'
+    },
+    {
+      id: 'space_seongsu_party',
+      spaceCloudId: 'sc_seongsu_party_001',
+      name: '성수 파티룸',
+      images: [
+        'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800',
+        'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800',
+        'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800'
+      ],
+      location: '서울 성동구 성수역 도보 7분',
+      pricePerHour: 45000,
+      capacity: 30,
+      rating: 4.8,
+      reviewCount: 256,
+      amenities: ['음향시스템', '조명', '주방', 'WiFi', '에어컨', '주차'],
+      description: '최대 30명 수용 가능한 파티룸. 생일파티, 팀 행사에 최적화.',
+      spaceCloudUrl: 'https://www.spacecloud.kr/space/sc_seongsu_party_001'
+    },
+  ]
+
   const mockDescriptions = [
     '안녕하세요! 강남역 3번 출구에서 도보 3분 거리에 위치한 프리미엄 회의실입니다. 최대 20명 수용 가능하며, 빔프로젝터와 화이트보드를 무료로 제공해드립니다.',
     '안녕하세요! 홍대입구역 인근 감성 스튜디오입니다. 촬영, 소규모 세미나, 워크숍에 최적화된 공간이에요. 자연광이 잘 들어와 촬영하기 좋습니다.',
@@ -272,6 +399,7 @@ export function generateMockQuotes(requestId, guestId) {
     hostId: host.id,
     host: host,
     spaceName: host.name,
+    space: mockSpaces[index], // 공간 상세 정보 추가
     price: mockItems[index].reduce((sum, item) => sum + item.price, 0),
     description: mockDescriptions[index],
     items: mockItems[index],
@@ -319,6 +447,7 @@ export default {
   getQuote,
   createQuote,
   updateQuote,
+  updateQuoteContent,
   markQuoteAsRead,
   isAutoQuote,
   getAutoQuotesByHost,
